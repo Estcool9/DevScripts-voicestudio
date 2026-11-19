@@ -16,7 +16,6 @@ update_os
 msg_info "Installing VoiceStudio system dependencies"
 $STD apt install -y \
   build-essential \
-  gnupg \
   libsndfile1
 msg_ok "Installed VoiceStudio system dependencies"
 
@@ -42,7 +41,7 @@ msg_ok "Built VoiceStudio web interface"
 msg_info "Configuring VoiceStudio data and model storage"
 mkdir -p /opt/voicestudio_data/huggingface
 chmod 700 /opt/voicestudio_data /opt/voicestudio_data/huggingface
-cat <<EOF >/opt/voicestudio_data/.env
+cat <<EOF_ENV >/opt/voicestudio_data/.env
 OMNIVOICE_SERVER_MODE=1
 OMNIVOICE_API_KEY=$(random_password 48)
 OMNIVOICE_DATA_DIR=/opt/voicestudio_data
@@ -51,12 +50,12 @@ PYTHONPATH=/opt/voicestudio/backend
 PYTHONUNBUFFERED=1
 PYTHONDONTWRITEBYTECODE=1
 OMNIVOICE_ANALYTICS_DISABLED=1
-EOF
+EOF_ENV
 chmod 600 /opt/voicestudio_data/.env
 msg_ok "Configured VoiceStudio data and model storage"
 
 msg_info "Creating VoiceStudio service"
-cat <<EOF >/etc/systemd/system/voicestudio.service
+cat <<EOF_SERVICE >/etc/systemd/system/voicestudio.service
 [Unit]
 Description=VoiceStudio Web Backend
 After=network-online.target
@@ -75,7 +74,7 @@ LimitNOFILE=65535
 
 [Install]
 WantedBy=multi-user.target
-EOF
+EOF_SERVICE
 systemctl enable -q --now voicestudio
 msg_ok "Created VoiceStudio service"
 
